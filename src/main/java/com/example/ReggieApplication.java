@@ -18,4 +18,6 @@ public class ReggieApplication {
     }
     //http://localhost:8080/backend/page/login/login.html
 
+    //http://localhost:8080/front/page/login.html
+
 }

@@ -31,7 +31,15 @@ public class LoginCheckFilter implements Filter {
 
         String requestURI = request.getRequestURI();
         //判断是否处理
-        String[] uris = new String[]{"/employee/login","/employee.logout","/backend/**","/front/**","/common/**"};
+        String[] uris = new String[]{
+                "/employee/login",
+                "/employee.logout",
+                "/backend/**",
+                "/front/**",
+                "/common/**",
+                "/user/login" ,
+                "/user/sendMsg"
+        };
         boolean check = check(uris, requestURI);
         //不需要则直接放行
         if(check){
@@ -43,6 +51,14 @@ public class LoginCheckFilter implements Filter {
         {
             Long empId = (Long) request.getSession().getAttribute("employee");
             BaseContext.setCurrentId(empId);
+            filterChain.doFilter(request,response);
+            return;
+        }
+
+        if(request.getSession().getAttribute("user")!=null)
+        {
+            Long userId = (Long) request.getSession().getAttribute("user");
+            BaseContext.setCurrentId(userId);
             filterChain.doFilter(request,response);
             return;
         }

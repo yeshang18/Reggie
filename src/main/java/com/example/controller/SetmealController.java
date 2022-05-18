@@ -120,4 +120,35 @@ public class SetmealController {
         setmealDishService.remove(lqw);
         return R.success("删除成功");
     }
+
+    @GetMapping("/list")
+    public R<List<SetmealDto>> getList(Setmeal setmeal){
+        LambdaQueryWrapper<Setmeal> lqw =new LambdaQueryWrapper<>();
+        lqw.eq(Setmeal::getCategoryId,setmeal.getCategoryId());
+        lqw.eq(Setmeal::getStatus,setmeal.getStatus());
+        List list = setmealService.list(lqw);
+
+        return R.success(list);
+    }
+
+    @GetMapping("/dish/{id}")
+    public R<SetmealDto> getdish(@PathVariable String id){
+        Setmeal setmeal = setmealService.getById(id);
+        SetmealDto setmealDto =new SetmealDto();
+
+        LambdaQueryWrapper<SetmealDish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SetmealDish::getSetmealId,id);
+
+        List list = setmealDishService.list(lambdaQueryWrapper);
+
+        BeanUtils.copyProperties(setmeal,setmealDto);
+
+        String name = categoryService.getById(setmeal.getCategoryId()).getName();
+        setmealDto.setCategoryName(name);
+        setmealDto.setSetmealDishes(list);
+
+        return R.success(setmealDto);
+
+    }
+
 }
