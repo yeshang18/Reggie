@@ -89,10 +89,10 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         orders.setAmount(new BigDecimal(amount.get()));
         orders.setConsignee(addressBook.getConsignee());
         orders.setPhone(addressBook.getPhone());
-        orders.setAddress((addressBook.getProvinceName()!=null?"":addressBook.getProvinceName())
-                        +(addressBook.getCityName()!=null?"":addressBook.getCityName())
-                        +(addressBook.getDistrictName()!=null?"":addressBook.getDistrictName())
-                        +(addressBook.getDetail()!=null?"":addressBook.getDetail())
+        orders.setAddress((addressBook.getProvinceName()==null?"":addressBook.getProvinceName())
+                        +(addressBook.getCityName()==null?"":addressBook.getCityName())
+                        +(addressBook.getDistrictName()==null?"":addressBook.getDistrictName())
+                        +(addressBook.getDetail()==null?"":addressBook.getDetail())
                         );
         this.save(orders);
 
