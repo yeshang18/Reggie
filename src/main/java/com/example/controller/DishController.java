@@ -13,6 +13,8 @@ import com.example.service.DishFlavorService;
 import com.example.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,7 @@ public class DishController {
     private RedisTemplate redisTemplate;
 
     @PostMapping
+    @CacheEvict(value = "dishCache",key="#dishDto.categoryId+'_'+#dishDto.status")
     public R<String> insert(@RequestBody DishDto dishDto){
         dishService.saveDishDto(dishDto);
 
@@ -78,6 +81,7 @@ public class DishController {
     }
 
     @PutMapping
+    @CacheEvict(value = "dishCache",key="#dishDto.categoryId+'_'+#dishDto.status")
     public R<String> update(@RequestBody DishDto dishDto){
 
         dishService.updateDishDto(dishDto);
@@ -85,6 +89,7 @@ public class DishController {
     }
 
     @PostMapping("/status/0")
+    @CacheEvict(value = "dishCache",allEntries = true)
     public R<String> stop(Long[] ids){
         for (Long id:ids) {
             Dish dish = dishService.getById(id);
@@ -153,15 +158,17 @@ public class DishController {
 
 
         @GetMapping("/list")
+
+        @Cacheable(value = "dishCache",key = "#dish.categoryId+'_'+#dish.status")
         public R<List<DishDto>> list(Dish dish){
             List<DishDto> dishDtoList;
 
-            String key = "dish_"+dish.getCategoryId()+"_"+dish.getStatus();
+            /*String key = "dish_"+dish.getCategoryId()+"_"+dish.getStatus();
 
             dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
 
             if(dishDtoList!=null)
-                return R.success(dishDtoList);
+                return R.success(dishDtoList);*/
             //构造查询条件
             LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(dish.getCategoryId() != null ,Dish::getCategoryId,dish.getCategoryId());
@@ -197,7 +204,7 @@ public class DishController {
                 return dishDto;
             }).collect(Collectors.toList());
 
-            redisTemplate.opsForValue().set(key,dishDtoList,60, TimeUnit.MINUTES);
+//            redisTemplate.opsForValue().set(key,dishDtoList,60, TimeUnit.MINUTES);
             return R.success(dishDtoList);
         }
 

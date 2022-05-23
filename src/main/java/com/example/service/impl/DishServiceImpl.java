@@ -31,7 +31,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
 
     @Transactional
     public void saveDishDto(DishDto dishDto){
-        String key = "dish_"+dishDto.getCategoryId()+"_"+dishDto.getStatus();
+       // String key = "dish_"+dishDto.getCategoryId()+"_"+dishDto.getStatus();
 
         this.save(dishDto);
 
@@ -42,7 +42,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
             return item;
         }).collect(Collectors.toList());
 
-        redisTemplate.delete(key);
+        //redisTemplate.delete(key);
         dishFlavorService.saveBatch(dishFlavors);
     }
 
@@ -60,7 +60,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
     @Transactional
     public void updateDishDto(DishDto dishDto) {
 
-        String key = "dish_"+dishDto.getCategoryId()+"_"+dishDto.getStatus();
+        //String key = "dish_"+dishDto.getCategoryId()+"_"+dishDto.getStatus();
 
         this.updateById(dishDto);
         LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper();
@@ -72,7 +72,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
             item.setDishId(dishId);
             return item;
         }).collect(Collectors.toList());
-        redisTemplate.delete(key);
+       // redisTemplate.delete(key);
         dishFlavorService.saveBatch(dishFlavors);
     }
 

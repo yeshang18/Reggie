@@ -10,6 +10,8 @@ import com.example.service.SetmealDishService;
 import com.example.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,7 @@ public class SetmealController {
     private RedisTemplate redisTemplate;
 
     @PostMapping
+    @CacheEvict(value = "setmeal",key="#setmealDto.categoryId+'_'+#setmealDto.status")
     public R<String> insert(@RequestBody SetmealDto setmealDto){
 
         setmealService.saveSetmealDto(setmealDto);
@@ -78,6 +81,7 @@ public class SetmealController {
     }
 
     @PutMapping
+    @CacheEvict(value = "setmeal",key="#setmealDto.categoryId+'_'+#setmealDto.status")
     public R<String> update(@RequestBody SetmealDto setmealDto){
         setmealService.updateSetmealDto(setmealDto);
 
@@ -85,6 +89,7 @@ public class SetmealController {
     }
 
     @PostMapping("/status/0")
+    @CacheEvict(value = "setmeal",allEntries = true)
     public R<String> stop(Long[] ids){
         for (Long id:ids) {
             Setmeal setmeal = setmealService.getById(id);
@@ -108,6 +113,7 @@ public class SetmealController {
         return R.success("启售成功!");
     }
     @DeleteMapping
+    @CacheEvict(value = "setmeal",allEntries = true)
     public R<String> delete(@RequestParam List<Long> ids){
 
         LambdaQueryWrapper<Setmeal> lqw1 =new LambdaQueryWrapper<>();
@@ -126,21 +132,22 @@ public class SetmealController {
     }
 
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_'+#setmeal.status")
     public R<List<Setmeal>> getList(Setmeal setmeal){
         List<Setmeal> list;
 
-        String key = "setmeal_"+setmeal.getCategoryId()+"_"+setmeal.getStatus();
+//        String key = "setmeal_"+setmeal.getCategoryId()+"_"+setmeal.getStatus();
+//
+//        list = (List<Setmeal>) redisTemplate.opsForValue().get(key);
 
-        list = (List<Setmeal>) redisTemplate.opsForValue().get(key);
-
-        if(list!=null)
-            return R.success(list);
+        /*if(list!=null)
+            return R.success(list);*/
         LambdaQueryWrapper<Setmeal> lqw =new LambdaQueryWrapper<>();
         lqw.eq(Setmeal::getCategoryId,setmeal.getCategoryId());
         lqw.eq(Setmeal::getStatus,setmeal.getStatus());
         list = setmealService.list(lqw);
 
-        redisTemplate.opsForValue().set(key,list,60, TimeUnit.MINUTES);
+       // redisTemplate.opsForValue().set(key,list,60, TimeUnit.MINUTES);
         return R.success(list);
     }
 

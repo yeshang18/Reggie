@@ -64,7 +64,6 @@ public class LoginCheckFilter implements Filter {
         }
         //未登录则跳转登陆页面，通过输出流向客户端响应
         response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
-        return;
     }
 
 
