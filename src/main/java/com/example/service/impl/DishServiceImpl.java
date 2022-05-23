@@ -13,6 +13,7 @@ import com.example.service.DishFlavorService;
 import com.example.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +26,13 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
 
     @Autowired
     private DishFlavorService dishFlavorService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Transactional
     public void saveDishDto(DishDto dishDto){
+        String key = "dish_"+dishDto.getCategoryId()+"_"+dishDto.getStatus();
+
         this.save(dishDto);
 
         Long dishId = dishDto.getId();
@@ -37,6 +42,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
             return item;
         }).collect(Collectors.toList());
 
+        redisTemplate.delete(key);
         dishFlavorService.saveBatch(dishFlavors);
     }
 
@@ -53,6 +59,9 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
 
     @Transactional
     public void updateDishDto(DishDto dishDto) {
+
+        String key = "dish_"+dishDto.getCategoryId()+"_"+dishDto.getStatus();
+
         this.updateById(dishDto);
         LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper();
         lqw.eq(DishFlavor::getDishId,dishDto.getId());
@@ -63,6 +72,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
             item.setDishId(dishId);
             return item;
         }).collect(Collectors.toList());
+        redisTemplate.delete(key);
         dishFlavorService.saveBatch(dishFlavors);
     }
 

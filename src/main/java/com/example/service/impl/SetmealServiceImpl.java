@@ -13,6 +13,7 @@ import com.example.service.SetmealDishService;
 import com.example.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +26,14 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
 
     @Autowired
     private SetmealDishService setmealDishService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     @Transactional
     public void saveSetmealDto(SetmealDto setmealDto) {
+        String key = "setmeal_"+setmealDto.getCategoryId()+"_"+setmealDto.getStatus();
+
         this.save(setmealDto);
         Long setmealId = setmealDto.getId();
         List<SetmealDish> dishes = setmealDto.getSetmealDishes();
@@ -37,6 +42,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
             return item;
         }).collect(Collectors.toList());
 
+        redisTemplate.delete(key);
         setmealDishService.saveBatch(dishes);
     }
 
@@ -59,6 +65,8 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     @Override
     @Transactional
     public void updateSetmealDto(SetmealDto setmealDto) {
+
+        String key = "setmeal_"+setmealDto.getCategoryId()+"_"+setmealDto.getStatus();
         this.updateById(setmealDto);
         LambdaQueryWrapper<SetmealDish> lqw =new LambdaQueryWrapper<>();
         lqw.eq(SetmealDish::getSetmealId,setmealDto.getId());
@@ -68,7 +76,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
             item.setSetmealId(setmealDto.getId());
             return item;
         }).collect(Collectors.toList());
-
+        redisTemplate.delete(key);
         setmealDishService.saveBatch(dishes);
     }
 
