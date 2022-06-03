@@ -2,12 +2,12 @@ server:
   port: 8080
 
 spring:
-#  datasource:
-#    druid:
-#      driver-class-name: com.mysql.cj.jdbc.Driver
-#      url: jdbc:mysql://localhost:3306/reggie?characterEncoding=utf-8
-#      username: root
-#      password: root
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/reggie?characterEncoding=utf-8
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
   application:
     name: reggie
   redis:
@@ -18,31 +18,31 @@ spring:
   cache:
     redis:
       time-to-live: 1800000
-  shardingsphere:
-    datasource:
-      names: master,slave
-      master:
-        type: com.alibaba.druid.pool.DruidDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://192.168.120.129:3306/reggie?characterEncoding=utf-8
-        username: root
-        password: root
-      slave:
-        type: com.alibaba.druid.pool.DruidDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://192.168.120.130:3306/reggie?characterEncoding=utf-8
-        username: root
-        password: root
-    masterslave:
-      load-balance-algorithm-type: round_robin
-      name: dataSource
-      master-data-source-name: master
-      slave-data-source-names: slave
-    props:
-      sql:
-        show: true
-  main:
-    allow-bean-definition-overriding: true
+#  shardingsphere:
+#    datasource:
+#      names: master,slave
+#      master:
+#        type: com.alibaba.druid.pool.DruidDataSource
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        url: jdbc:mysql://192.168.120.129:3306/reggie?characterEncoding=utf-8
+#        username: root
+#        password: root
+#      slave:
+#        type: com.alibaba.druid.pool.DruidDataSource
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        url: jdbc:mysql://192.168.120.130:3306/reggie?characterEncoding=utf-8
+#        username: root
+#        password: root
+#    masterslave:
+#      load-balance-algorithm-type: round_robin
+#      name: dataSource
+#      master-data-source-name: master
+#      slave-data-source-names: slave
+#    props:
+#      sql:
+#        show: true
+#  main:
+#    allow-bean-definition-overriding: true
 
 mybatis-plus:
   configuration:
