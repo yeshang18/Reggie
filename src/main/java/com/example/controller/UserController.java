@@ -40,11 +40,11 @@ public class UserController {
             //String code = ValidateCodeUtils.generateValidateCode(4).toString();
 
             String code = "1234";
-            //session.setAttribute(phone,code);  //存入session中
+            session.setAttribute(phone,code);  //存入session中
 
             //存入Redis中，并设置5分钟
 
-            stringRedisTemplate.opsForValue().set(phone,code,5, TimeUnit.MINUTES);
+           // stringRedisTemplate.opsForValue().set(phone,code,5, TimeUnit.MINUTES);
 
             return R.success("发送成功");
         }
@@ -59,10 +59,24 @@ public class UserController {
         String phone =map.get("phone").toString();
         String code = map.get("code").toString();
         //session获取验证码
-        //Object codeInsSession =session.getAttribute(phone);
+        Object codeInsSession =session.getAttribute(phone);
+        if(codeInsSession.equals(code))
+        {
+            LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(User::getPhone, phone);
 
+            User user = userService.getOne(lqw);
+            if (user == null) {
+                user = new User();
+                user.setPhone(phone);
+                user.setStatus(1);
+                userService.save(user);
+            }
+            session.setAttribute("user",user.getId());
+            return R.success(user);
+        }
         //redis获取验证码
-        String codeInsSession = stringRedisTemplate.opsForValue().get(phone);
+     /*   String codeInsSession = stringRedisTemplate.opsForValue().get(phone);
         if (codeInsSession!=null && codeInsSession.equals(code)) {
             LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<>();
             lqw.eq(User::getPhone, phone);
@@ -79,7 +93,7 @@ public class UserController {
             //用户登陆成功，删除验证码
             stringRedisTemplate.delete(phone);
             return R.success(user);
-        }
+        }*/
         return R.error("登陆失败，请检查验证码是否正确!");
 
     }

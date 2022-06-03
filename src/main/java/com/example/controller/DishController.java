@@ -37,7 +37,7 @@ public class DishController {
     private RedisTemplate redisTemplate;
 
     @PostMapping
-    @CacheEvict(value = "dishCache",key="#dishDto.categoryId+'_'+#dishDto.status")
+   // @CacheEvict(value = "dishCache",key="#dishDto.categoryId+'_'+#dishDto.status")
     public R<String> insert(@RequestBody DishDto dishDto){
         dishService.saveDishDto(dishDto);
 
@@ -81,7 +81,7 @@ public class DishController {
     }
 
     @PutMapping
-    @CacheEvict(value = "dishCache",key="#dishDto.categoryId+'_'+#dishDto.status")
+   // @CacheEvict(value = "dishCache",key="#dishDto.categoryId+'_'+#dishDto.status")
     public R<String> update(@RequestBody DishDto dishDto){
 
         dishService.updateDishDto(dishDto);
@@ -89,7 +89,7 @@ public class DishController {
     }
 
     @PostMapping("/status/0")
-    @CacheEvict(value = "dishCache",allEntries = true)
+    //@CacheEvict(value = "dishCache",allEntries = true)
     public R<String> stop(Long[] ids){
         for (Long id:ids) {
             Dish dish = dishService.getById(id);
@@ -159,7 +159,7 @@ public class DishController {
 
         @GetMapping("/list")
 
-        @Cacheable(value = "dishCache",key = "#dish.categoryId+'_'+#dish.status")
+       // @Cacheable(value = "dishCache",key = "#dish.categoryId+'_'+#dish.status")
         public R<List<DishDto>> list(Dish dish){
             List<DishDto> dishDtoList;
 

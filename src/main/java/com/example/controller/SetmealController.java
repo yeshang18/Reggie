@@ -35,7 +35,7 @@ public class SetmealController {
     private RedisTemplate redisTemplate;
 
     @PostMapping
-    @CacheEvict(value = "setmeal",key="#setmealDto.categoryId+'_'+#setmealDto.status")
+   // @CacheEvict(value = "setmeal",key="#setmealDto.categoryId+'_'+#setmealDto.status")
     public R<String> insert(@RequestBody SetmealDto setmealDto){
 
         setmealService.saveSetmealDto(setmealDto);
@@ -81,7 +81,7 @@ public class SetmealController {
     }
 
     @PutMapping
-    @CacheEvict(value = "setmeal",key="#setmealDto.categoryId+'_'+#setmealDto.status")
+   // @CacheEvict(value = "setmeal",key="#setmealDto.categoryId+'_'+#setmealDto.status")
     public R<String> update(@RequestBody SetmealDto setmealDto){
         setmealService.updateSetmealDto(setmealDto);
 
@@ -89,7 +89,7 @@ public class SetmealController {
     }
 
     @PostMapping("/status/0")
-    @CacheEvict(value = "setmeal",allEntries = true)
+    //@CacheEvict(value = "setmeal",allEntries = true)
     public R<String> stop(Long[] ids){
         for (Long id:ids) {
             Setmeal setmeal = setmealService.getById(id);
@@ -113,7 +113,7 @@ public class SetmealController {
         return R.success("启售成功!");
     }
     @DeleteMapping
-    @CacheEvict(value = "setmeal",allEntries = true)
+    //@CacheEvict(value = "setmeal",allEntries = true)
     public R<String> delete(@RequestParam List<Long> ids){
 
         LambdaQueryWrapper<Setmeal> lqw1 =new LambdaQueryWrapper<>();
@@ -132,7 +132,7 @@ public class SetmealController {
     }
 
     @GetMapping("/list")
-    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_'+#setmeal.status")
+    //@Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_'+#setmeal.status")
     public R<List<Setmeal>> getList(Setmeal setmeal){
         List<Setmeal> list;
 
